@@ -1,8 +1,13 @@
+/**
+ * Le code originale se trouve sur => 
+ */
+
+
 /* CONSTANTES */
 
 // Liste des proxy
 const proxys = [
-	'', // try without proxy first
+	'', // On essaie d'abord sans proxy
 	'https://api.codetabs.com/v1/proxy/?quest='
 ];
 
@@ -36,26 +41,26 @@ function getUrl() {
 	 * On remplace les assets
 	 */
 	function replaceAssets() {
-		//Framesets
-		if (document.querySelectorAll('frameset').length) return; //Don't replace CSS/JS if it's a frameset, because it will be erased by document.write()
+		//
+		if (document.querySelectorAll('frameset').length) return;
 		
 		//Frames
-		const frame = document.querySelectorAll('iframe[src],frame[src]');
-		for (let i = 0; i < frame.length; ++i) {
-			const src = frame[i].src; //Get absolute URL
-			if (src.indexOf('//raw.githubusercontent.com') > 0 || src.indexOf('//bitbucket.org') > 0) { //Check if it's from raw.github.com or bitbucket.org
-				frame[i].src = '//' + location.hostname + location.pathname + '?' + src; //Then rewrite URL so it can be loaded using CORS proxy
+		const frames = document.querySelectorAll('iframe[src],frame[src]');
+		for (let i = 0; i < frames.length; ++i) {
+			const src = frames[i].src;
+			if (src.indexOf('//raw.githubusercontent.com') > 0 || src.indexOf('//bitbucket.org') > 0) {
+				frames[i].src = '//' + location.hostname + location.pathname + '?' + src;
 			}
 		}
 
 		//Links
 		const a = document.querySelectorAll('a[href]');
 		for (let i = 0; i < a.length; ++i) {
-			const href = a[i].href; //Get absolute URL
-			if (href.indexOf('#') > 0) { //Check if it's an anchor
-				a[i].href = '//' + location.hostname + location.pathname + location.search + '#' + a[i].hash.substring(1); //Then rewrite URL with support for empty anchor
-			} else if ((href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0) && (href.indexOf('.html') > 0 || href.indexOf('.htm') > 0)) { //Check if it's from raw.github.com or bitbucket.org and to HTML files
-				a[i].href = '//' + location.hostname + location.pathname + '?' + href; //Then rewrite URL so it can be loaded using CORS proxy
+			const href = a[i].href;
+			if (href.indexOf('#') > 0) {
+				a[i].href = '//' + location.hostname + location.pathname + location.search + '#' + a[i].hash.substring(1);
+			} else if ((href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0) && (href.indexOf('.html') > 0 || href.indexOf('.htm') > 0)) {
+				a[i].href = '//' + location.hostname + location.pathname + '?' + href;
 			}
 		}
 
@@ -63,9 +68,9 @@ function getUrl() {
 		const links = [];
 		const link = document.querySelectorAll('link[rel=stylesheet]');
 		for (let i = 0; i < link.length; ++i) {
-			const href = link[i].href; //Get absolute URL
-			if (href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0) { //Check if it's from raw.github.com or bitbucket.org
-				links.push(fetchProxy(href, null, 0)); //Then add it to links queue and fetch using CORS proxy
+			const href = link[i].href;
+			if (href.indexOf('//raw.githubusercontent.com') > 0 || href.indexOf('//bitbucket.org') > 0) {
+				links.push(fetchProxy(href, null, 0));
 			}
 		}
 		Promise.all(links).then(function (res) {
@@ -78,31 +83,31 @@ function getUrl() {
 		const scripts = [];
 		const script = document.querySelectorAll('script[type="text/htmlpreview"]');
 		for (let i = 0; i < script.length; ++i) {
-			const src = script[i].src; //Get absolute URL
-			if (src.indexOf('//raw.githubusercontent.com') > 0 || src.indexOf('//bitbucket.org') > 0) { //Check if it's from raw.github.com or bitbucket.org
-				scripts.push(fetchProxy(src, null, 0)); //Then add it to scripts queue and fetch using CORS proxy
+			const src = script[i].src;
+			if (src.indexOf('//raw.githubusercontent.com') > 0 || src.indexOf('//bitbucket.org') > 0) {
+				scripts.push(fetchProxy(src, null, 0));
 			} else {
 				script[i].removeAttribute('type');
-				scripts.push(script[i].innerHTML); //Add inline script to queue to eval in order
+				scripts.push(script[i].innerHTML);
 			}
 		}
 		Promise.all(scripts).then(function (res) {
 			for (let i = 0; i < res.length; ++i) {
 				loadJS(res[i]);
 			}
-			document.dispatchEvent(new Event('DOMContentLoaded', {bubbles: true, cancelable: true})); //Dispatch DOMContentLoaded event after loading all scripts
+			document.dispatchEvent(new Event('DOMContentLoaded', {bubbles: true, cancelable: true}));
 		});
 	};
 
 	function loadHTML(data) {
 		if (data == null) return;
-		data = data.replace(/<head([^>]*)>/i, '<head$1><base href="' + url + '">').replace(/<script(\s*src=["'][^"']*["'])?(\s*type=["'](text|application)\/javascript["'])?/gi, '<script type="text/htmlpreview"$1'); //Add <base> just after <head> and replace <script type="text/javascript"> with <script type="text/htmlpreview">
+		data = data.replace(/<head([^>]*)>/i, '<head$1><base href="' + url + '">').replace(/<script(\s*src=["'][^"']*["'])?(\s*type=["'](text|application)\/javascript["'])?/gi, '<script type="text/htmlpreview"$1');
 		setTimeout(function () {
 			document.open();
 			document.write(data);
 			document.close();
 			replaceAssets();
-		}, 10); //Delay updating document to have it cleared before	
+		}, 10);
 	};
 
 	function loadCSS(data) {

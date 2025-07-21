@@ -1,13 +1,15 @@
-FROM nginx:stable-alpine
+FROM node:20-slim
 
-# Supprimer la page d'accueil par défaut
-RUN rm -rf /usr/share/nginx/html/*
+WORKDIR /app
 
-# Copier les fichiers statiques dans le répertoire de Nginx
-COPY . /usr/share/nginx/html
+# Installer le serveur statique
+RUN npm install -g serve
 
-# Exposer le port
+# Copier les fichiers statiques (par ex. Vite build → dist/)
+COPY ./dist .
+
+# Exposer le port que tu veux (ex. 40001)
 EXPOSE 40001
 
-# Démarrer Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Lancer le serveur
+CMD ["serve", ".", "-l", "40001"]

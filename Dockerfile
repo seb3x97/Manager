@@ -5,8 +5,8 @@ WORKDIR /app
 # Installer le serveur statique
 RUN npm install -g serve
 
-# Copier les fichiers statiques (par ex. Vite build → dist/)
-COPY ./dist .
+# Copier les fichiers statiques
+COPY . .
 
 # Exposer le port que tu veux (ex. 40001)
 EXPOSE 40001

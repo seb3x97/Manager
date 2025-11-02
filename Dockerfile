@@ -8,8 +8,8 @@ RUN npm install -g serve
 # Copier les fichiers statiques
 COPY . .
 
-# Exposer le port que tu veux (ex. 40001)
-EXPOSE 40001
+# Exposer le port
+EXPOSE 4100
 
 # Lancer le serveur
-CMD ["serve", ".", "-l", "40001"]
+CMD ["serve", ".", "-l", "4100"]
